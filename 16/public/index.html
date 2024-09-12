@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('DOMContentLoaded')
+        })
+        window.addEventListener('load', () => {
+            console.log('load')
+            const entries = performance.getEntriesByType('measure');
+            entries.forEach(entry => {
+                console.log(`${entry.name}: ${entry.startTime}, ${entry.duration} ms`);
+            });
+        });
+    </script>
+     <!-- <link rel="prefetch" href="index-next.html" as="html"/>
+     <link rel="preload" href="image.png" as="image" /> -->
+</head>
+<body>
+    <h1>Hello World</h1>
+    <button id="addImageButton">Add Image</button>
+    <a href="index-next.html">Next Page</a>
+    <img src="image.png" alt="image.png" loading="lazy" />
+    <div style="height:1000px;border:solid 1px black">Empty Box</div>
+    <img src="image2.png" alt="image2.png" loading="lazy" />
+    <script>
+        document.querySelector('#addImageButton').addEventListener('click', () => {
+            const img = document.createElement('img')
+            img.src = 'image.png'
+            document.body.appendChild(img)
+        })
+    </script>
+    <script>
+        performance.mark('script-long-start');
+    </script>
+    <!-- <script src="script-long.js" ></script> -->
+
+
+    <script>
+        performance.mark('script-short-start');
+    </script>
+    <!-- <script src="script-short.js" defer></script> -->
+</body>
+</html>
