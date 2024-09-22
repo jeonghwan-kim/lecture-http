@@ -16,7 +16,8 @@ function handler(req, res) {
   // 이후에 브라우져가 다시 요청하면 Cookie 요청 헤더에 그대로 실어 보내기 때문입니다.
   // res.setHeader("Set-Cookie", "sid=1");
   // res.setHeader("Set-Cookie", "sid=1; Domain=foo.com");
-  res.setHeader("Set-Cookie", "sid=1; Path=/private");
+  // res.setHeader("Set-Cookie", "sid=1; Path=/private");
+  res.setHeader("Set-Cookie", "sid=1; Max-Age=10");
   // 첫 방문한 응답 본문 도 실어 보냅니다.
   res.end("Welcome");
 }
