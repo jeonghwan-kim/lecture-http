@@ -17,7 +17,10 @@ function handler(req, res) {
   // res.setHeader("Set-Cookie", "sid=1");
   // res.setHeader("Set-Cookie", "sid=1; Domain=foo.com");
   // res.setHeader("Set-Cookie", "sid=1; Path=/private");
-  res.setHeader("Set-Cookie", "sid=1; Max-Age=10");
+  // res.setHeader("Set-Cookie", "sid=1; Max-Age=10");
+  // res.setHeader("Set-Cookie", "sid=1; Secure");
+  res.setHeader("Set-Cookie", "sid=1; HttpOnly");
+
   // 첫 방문한 응답 본문 도 실어 보냅니다.
   res.end("Welcome");
 }
