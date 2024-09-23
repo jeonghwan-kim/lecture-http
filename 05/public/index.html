@@ -22,5 +22,18 @@
 
     <!-- 이미지는 새로운 HTTP 요청을 만든다. -->
     <img src="/cat.jpg" alt="cat" />
+
+    <!-- 폼은 새로운 HTTP 요청을 만든다. -->
+    <form method="POST" action="/login" enctype="multipart/form-data">
+      <input id="email" name="email" placeholder="Email" />
+      <input name="password" placeholder="Password" />
+      <!-- 파일 필드도 추가합니다. -->
+      <!-- <input
+        type="file"
+        name="identification-card"
+        accept="image/png,image/jepg"
+      /> -->
+      <button type="submit">Login</button>
+    </form>
   </body>
 </html>

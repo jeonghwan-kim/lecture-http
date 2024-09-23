@@ -23,43 +23,51 @@ function logRequest(req) {
   console.log(log);
 }
 
-/**
- * 로그인 컨트롤러
- * GET 메소드 요청을 처리한다.
- */
-function getLoginController(req, res) {
+// 로그인 함수입니다. (GET 요청 처리 용)
+function getLogin(req, res) {
+  // 쿼리 문자열에서 email과 password을 조회합니다.
   const { searchParams } = new URL(req.url, `http://${req.headers.host}`);
   const email = searchParams.get("email");
   const password = searchParams.get("password");
 
   const authenticated = email === "myemail" && password === "mypassword";
 
+  // 인증 실패
   if (!authenticated) {
-    res.end("Fail");
+    res.writeHead(401);
+    res.end("Unauthorized");
     return;
   }
 
+  // 인증 성공
   res.end("Success");
 }
 
-/**
- * 로그인 컨트롤러
- * POST 메소드 요청을 처리한다.
- */
-function postLoginController(req, res) {
+// 로그인 함수입니다. (POST 요청 처리 용)
+function postLogin(req, res) {
+  // 요청 본문을 담을 변수
   let body = "";
+
+  // HTTP 요청 본문이 도착할 때마다 "data" 이벤트가 발생합니다.
   req.on("data", (chunk) => {
+    // 이때마다 데이터를 모아둡니다.
     body = body + chunk.toString();
   });
+
+  // 요청 본문이 모두 도착할 경우
   req.on("end", () => {
+    console.log("body", body);
     const { email, password } = querystring.parse(body);
     const authenticated = email === "myemail" && password === "mypassword";
 
+    // 인증 실패
     if (!authenticated) {
-      res.end("Fail");
+      res.writeHead(401);
+      res.end("Unauthorized");
       return;
     }
 
+    // 인증 성공
     res.end("Success");
   });
 }
@@ -74,7 +82,8 @@ function handler(req, res) {
   }
 
   if (pathname === "/login") {
-    getLoginController(req, res);
+    // getLogin(req, res);
+    postLogin(req, res);
     return;
   }
 
