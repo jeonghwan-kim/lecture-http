@@ -4,16 +4,22 @@ const querystring = require("querystring");
 const path = require("path");
 const static = require("../shared/serve-static");
 
-/**
- * 요청 로깅
- */
+// 로깅 함수입니다.
 function logRequest(req) {
   const log = [
+    // 유저의 사용시간을 알수 있습니다.
     `${new Date().toISOString()}`,
+
+    // 유저의 접속 지역을 알 수 있습니다.
     `IP: ${req.socket.remoteAddress || req.connection.remoteAddress}`,
+
+    // 유저가 사용하는 단말기를 추정할 수 있습니다.
     `User-Agent: ${req.headers["user-agent"]}`,
+
+    // 사용자가 어떤 페이지를 보는지 알 수 있습니다.
     `Referer: ${req.headers["referer"]}`,
   ].join(", ");
+
   console.log(log);
 }
 
@@ -62,6 +68,7 @@ function postLoginController(req, res) {
 function handler(req, res) {
   let { pathname } = new URL(req.url, `http://${req.headers.host}`);
 
+  // GET /tracking-pixel.git 요청이 오면 로깅합니다.
   if (pathname === "/tracking-pixel.gif") {
     logRequest(req);
   }
