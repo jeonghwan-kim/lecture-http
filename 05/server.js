@@ -1,8 +1,8 @@
 const http = require("http");
-const fs = require("fs");
-const path = require("path");
 const { URL } = require("url");
 const querystring = require("querystring");
+const path = require("path");
+const static = require("../shared/serve-static");
 
 /**
  * 요청 로깅
@@ -58,6 +58,7 @@ function postLoginController(req, res) {
   });
 }
 
+// 요청 핸들러 함수
 function handler(req, res) {
   let { pathname } = new URL(req.url, `http://${req.headers.host}`);
 
@@ -70,17 +71,8 @@ function handler(req, res) {
     return;
   }
 
-  const filename = pathname.replace(/^\//, "") || "index.html";
-  const filepath = path.resolve(__dirname, "public", filename);
-  fs.readFile(filepath, (err, data) => {
-    if (err) {
-      console.error(err);
-      res.end("Error");
-      return;
-    }
-
-    res.end(data);
-  });
+  // 정적 파일 요청을 처리한다.
+  static(path.join(__dirname, "public"))(req, res);
 }
 
 const server = http.createServer(handler);
