@@ -1,24 +1,37 @@
 const http = require("http");
-const fs = require("fs");
 const path = require("path");
 const { URL } = require("url");
+const static = require("../shared/serve-static");
 
-/**
- * 로그인 컨트롤러
- * POST 메소드 요청을 처리한다.
- */
-function postLoginController(req, res) {
+function handleLogin() {
   let body = "";
   req.on("data", (chunk) => {
     body = body + chunk.toString();
   });
   req.on("end", () => {
+    res.end(body);
+  });
+}
+
+function handleJsonLogin(req, res) {
+  let body = "";
+
+  req.on("data", (chunk) => {
+    body = body + chunk.toString();
+  });
+
+  req.on("end", () => {
+    // 요청 본문을 JSON 객체로 파싱합니다.
     const { email, password } = JSON.parse(body);
+
+    // 인증
     const authenticated = email === "myemail" && password === "mypassword";
 
+    // 인증 결과에 따라 헤더를 실습니다.
     res.writeHead(authenticated ? 200 : 401, {
       "Content-Type": "application/json",
     });
+    // 인증 결과를 응답 본문에 실어 보냅니다.
     res.end(JSON.stringify({ authenticated }));
   });
 }
@@ -27,21 +40,13 @@ function handler(req, res) {
   let { pathname } = new URL(req.url, `http://${req.headers.host}`);
 
   if (pathname === "/login") {
-    postLoginController(req, res);
+    // handleLogin(req, res);
+    handleJsonLogin(req, res);
     return;
   }
 
-  const filename = pathname.replace(/^\//, "") || "index.html";
-  const filepath = path.resolve(__dirname, "public", filename);
-  fs.readFile(filepath, (err, data) => {
-    if (err) {
-      console.error(err);
-      res.end("Error");
-      return;
-    }
-
-    res.end(data);
-  });
+  // 정적 파일 요청을 처리한다.
+  static(path.join(__dirname, "public"))(req, res);
 }
 
 const server = http.createServer(handler);
