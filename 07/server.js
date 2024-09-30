@@ -1,26 +1,29 @@
 const http = require("http");
-const fs = require("fs");
 const path = require("path");
 const { URL } = require("url");
+const static = require("../shared/serve-static");
 
 async function chunk(req, res) {
-  // 5번 쪼게서 응답할 것이다.
-  const iterateCount = 5;
+  // 5번 쪼게서 응답할 겁니다.
+  const totalChunks = 5;
+  // 1초씩 지연해서 응답할 겁니다.
+  const delayInMS = 1000;
+  // 한 번에 보낼 데이터 크기입니다.
+  const chunkSize = 8;
 
-  // 헤더 응답.
   res.writeHead(200, {
-    "content-type": "text/plain",
-    // 응답 본문의 전체 길이다.
-    "content-length": iterateCount * 8,
+    "Content-Type": "text/plain",
+    // 응답 본문의 전체 길이
+    "Content-Length": totalChunks * chunkSize,
   });
 
-  // 1초씩 지연하면서 8바이트 청크를 5번 응답한다.
-  for await (const i of Array(iterateCount).keys()) {
+  // 1초씩 지연하면서 8바이트 청크를 5번 응답합니다.
+  for (let i = 0; i < totalChunks; i++) {
     res.write(`chunk ${i}\n`);
-    await new Promise((res) => setTimeout(res, 1000));
+    await new Promise((resolve) => setTimeout(resolve, delayInMS));
   }
 
-  // 응답 종료.
+  // 응답을 종료합니다.
   res.end();
 }
 
@@ -37,17 +40,8 @@ function handler(req, res) {
   if (pathname === "/chunk") return chunk(req, res);
   if (pathname === "/upload") return upload(req, res);
 
-  const filename = pathname.replace(/^\//, "") || "index.html";
-  const filepath = path.resolve(__dirname, "public", filename);
-  fs.readFile(filepath, (err, data) => {
-    if (err) {
-      console.error(err);
-      res.end("Error");
-      return;
-    }
-
-    res.end(data);
-  });
+  // 정적 파일 요청을 처리한다.
+  static(path.join(__dirname, "public"))(req, res);
 }
 
 const server = http.createServer(handler);
