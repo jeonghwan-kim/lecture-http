@@ -1,5 +1,5 @@
 // 취소할 수 있는 다운로드
-async function downloadChunkWithAbort(controller) {
+async function downloadWithAbort(controller) {
   try {
     // HTTP 요청 생성
     const response = await fetch("/chunk", {
@@ -34,7 +34,7 @@ async function downloadChunkWithAbort(controller) {
       receivedLength += value.length;
 
       // 진행율을 표시한다.
-      renderProgress(receivedLength, totalLength);
+      renderDownloadProgress(receivedLength, totalLength);
     }
   } catch (error) {
     console.error("다운로드 중 오류 발생:", error);
@@ -42,7 +42,7 @@ async function downloadChunkWithAbort(controller) {
 }
 
 // 다운로드 진행 상황을 화면에 표시한다.
-function renderProgress(receivedLength, totalLength) {
+function renderDownloadProgress(receivedLength, totalLength) {
   const gaugeEl = document.createElement("p");
 
   //  진행율 표시
@@ -137,7 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // AbortController 객체를 준비한다.
   const controller = new AbortController();
 
-  downloadChunkWithAbort(controller);
+  downloadWithAbort(controller);
   renderAbortButton(controller);
   renderUploadInput();
 });
