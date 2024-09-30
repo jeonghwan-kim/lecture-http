@@ -1,7 +1,6 @@
 <!DOCTYPE html>
   <head>
     <meta charset="UTF-8" />
-    <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon"> 
     <!-- superagent 로딩 -->
     <script src="https://cdn.jsdelivr.net/npm/superagent"></script>
     <!-- axios 로딩 -->
@@ -24,11 +23,15 @@
 
         try {
           // 1. 요청 
-          const response = await superagent.get('/hello').use(attachCustomHeader)
+          const response = await superagent.get('/api/fail').use(attachCustomHeader)
           console.log('response:', response)
+          console.log('response.body.result:', response.body.result)
         } catch (error) {
           // 2. 오류 
-          console.log('error:', JSON.stringify(error, null, 2), error.status, error.response)
+          console.log('error:', error)
+          console.log('error.status:', error.status)
+          console.log('error.response:', error.response)
+          console.log('error.response.body.result:', error.response.body.result)
         }
       }
 
@@ -43,7 +46,7 @@
 
         try {
           // 1. 요청 
-          const response = await axios.get('/hello')
+          const response = await axios.get('/api/success')
           console.log('response:', response)
         } catch (error) {
           // 2. 오류 
@@ -61,7 +64,7 @@
 
         try {
           // 1. 요청 
-          const response = await ky.get('/hello', {
+          const response = await ky.get('/api/success', {
             hooks: { 
               beforeRequest: [ attachCustomeHeaders ] 
             }
@@ -86,7 +89,7 @@
           // 1. 요청 
           const response = await wretch()
             .middlewares([attachCustomHeader])
-            .get('/hello')
+            .get('/api/success')
             .notFound(err => {
               console.log('notFound', err)
               return err.text
@@ -100,7 +103,7 @@
       }
       
       // 아래 주석을 하나씩 제거하면서 라이브러리를 테스트한다.
-      // testSuperagent();
+      testSuperagent();
       // testAxios()  
       // testKy()
       // testWretch()
