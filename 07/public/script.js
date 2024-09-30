@@ -1,3 +1,13 @@
+// 다운로드 버튼을 표시한다.
+function renderDownalodButton(controller) {
+  const downloadButton = document.createElement("button");
+  downloadButton.textContent = "Download";
+
+  downloadButton.addEventListener("click", () => downloadWithAbort(controller));
+
+  document.body.appendChild(downloadButton);
+}
+
 // 취소할 수 있는 다운로드
 async function downloadWithAbort(controller) {
   try {
@@ -137,7 +147,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // AbortController 객체를 준비한다.
   const controller = new AbortController();
 
-  downloadWithAbort(controller);
+  renderDownalodButton(controller);
   renderAbortButton(controller);
   renderUploadInput();
 });
