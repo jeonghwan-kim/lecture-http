@@ -46,7 +46,9 @@ function renderProgress(receivedLength, totalLength) {
   const gaugeEl = document.createElement("p");
 
   //  진행율 표시
-  gaugeEl.textContent = `${receivedLength}/${totalLength} byte downloaded.`;
+  gaugeEl.textContent = `< ${Math.round(
+    (receivedLength / totalLength) * 100
+  )} % downloaded.`;
 
   document.body.appendChild(gaugeEl);
 }
@@ -61,7 +63,7 @@ function renderResponseBody(chunks) {
     )
     .join("");
 
-  const el = document.createElement("p");
+  const el = document.createElement("pre");
   el.textContent = responseText;
   document.body.appendChild(el);
 }
@@ -85,10 +87,57 @@ function renderAbortButton(controller) {
   document.body.appendChild(abortButton);
 }
 
+// 업로드 인풋을 추가한다.
+function renderUploadInput() {
+  // 파일 인풋 앨리먼트
+  const uploadInput = document.createElement("input");
+  uploadInput.type = "file";
+
+  uploadInput.addEventListener("change", (event) => {
+    upload(uploadInput.files[0]);
+  });
+
+  document.body.appendChild(uploadInput);
+}
+
+// 파일을 업로드한다.
+function upload(file) {
+  // 입력한 파일을 폼데이터로 구성한다.
+  const formData = new FormData();
+  formData.append("file", file);
+
+  // xhr 객체를 준비한다.
+  const xhr = new XMLHttpRequest();
+
+  // 업로드 이벤트(progress)를 처리한다.
+  xhr.upload.addEventListener("progress", renderUploadProgress);
+
+  // 요청
+  xhr.open("POST", "/upload");
+  xhr.send(formData);
+}
+
+// 업로드 진행율을 표시한다.
+function renderUploadProgress(event) {
+  // 업로드 진행율
+  let uploadProgress = 0;
+
+  if (event.lengthComputable) {
+    // 업로드 진행율을 갱신한다.
+    uploadProgress = Math.round((event.loaded / event.total) * 100);
+
+    // 업로드 진행율을 표시한다.
+    const uploadGauge = document.createElement("p");
+    uploadGauge.textContent = `> ${uploadProgress}% uploaded.`;
+    document.body.appendChild(uploadGauge);
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   // AbortController 객체를 준비한다.
   const controller = new AbortController();
 
   downloadChunkWithAbort(controller);
   renderAbortButton(controller);
+  renderUploadInput();
 });
