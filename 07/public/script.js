@@ -1,4 +1,4 @@
-// 다운로드
+// 취소할 수 있는 다운로드
 async function downloadChunkWithAbort(controller) {
   try {
     // HTTP 요청 생성

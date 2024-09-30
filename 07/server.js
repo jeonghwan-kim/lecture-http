@@ -3,6 +3,7 @@ const path = require("path");
 const { URL } = require("url");
 const static = require("../shared/serve-static");
 
+// 본문을 5번씩 쪼게서 응답한다.
 async function chunk(req, res) {
   // 5번 쪼게서 응답할 겁니다.
   const totalChunks = 5;
