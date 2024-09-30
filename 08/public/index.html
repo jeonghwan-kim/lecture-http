@@ -48,9 +48,14 @@
           // 1. 요청 
           const response = await axios.get('/api/success')
           console.log('response:', response)
+          console.log('response.data.result:', response.data.result)
         } catch (error) {
           // 2. 오류 
           console.log('error:', error)
+          console.log('error.code:', error.code)
+          console.log('error.message:', error.message)
+          console.log('error.response:', error.response)
+          console.log('error.response.data.result:', error.response.data.result)
         }
       }
 
@@ -103,8 +108,8 @@
       }
       
       // 아래 주석을 하나씩 제거하면서 라이브러리를 테스트한다.
-      testSuperagent();
-      // testAxios()  
+      // testSuperagent();
+      testAxios()  
       // testKy()
       // testWretch()
     </script>
