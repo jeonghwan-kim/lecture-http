@@ -1,8 +1,11 @@
 // 다운로드
-async function downloadChunk() {
+async function downloadChunkWithAbort(controller) {
   try {
     // HTTP 요청 생성
-    const response = await fetch("/chunk");
+    const response = await fetch("/chunk", {
+      // abortSignal 객체를 전달해 취소할 수 있는 HTTP 요청을 만든다.
+      signal: controller.signal,
+    });
 
     // 본문 전체 길이
     const totalLength = Number(response.headers.get("content-length"));
@@ -40,12 +43,12 @@ async function downloadChunk() {
 
 // 다운로드 진행 상황을 화면에 표시한다.
 function renderProgress(receivedLength, totalLength) {
-  const el = document.createElement("pre");
+  const gaugeEl = document.createElement("p");
 
   //  진행율 표시
-  el.textContent = `${receivedLength}/${totalLength} byte downloaded.`;
+  gaugeEl.textContent = `${receivedLength}/${totalLength} byte downloaded.`;
 
-  document.body.appendChild(el);
+  document.body.appendChild(gaugeEl);
 }
 
 // 다운로드한 본문을 화면에 표시한다.
@@ -58,11 +61,34 @@ function renderResponseBody(chunks) {
     )
     .join("");
 
-  const el = document.createElement("div");
+  const el = document.createElement("p");
   el.textContent = responseText;
   document.body.appendChild(el);
 }
 
+// 취소 버튼을 렌더한다.
+function renderAbortButton(controller) {
+  // 버튼 앨리먼트
+  const abortButton = document.createElement("button");
+  abortButton.textContent = "abort";
+
+  // 버튼 클릭 이벤트 핸들러 등록
+  abortButton.addEventListener("click", () => {
+    // 요청을 취소한다.
+    controller.abort();
+
+    // 취소 메세지
+    const cancelMsgEl = document.createElement("p");
+    cancelMsgEl.textContent = "Download is canceled.";
+    document.body.appendChild(cancelMsgEl);
+  });
+  document.body.appendChild(abortButton);
+}
+
 document.addEventListener("DOMContentLoaded", () => {
-  downloadChunk();
+  // AbortController 객체를 준비한다.
+  const controller = new AbortController();
+
+  downloadChunkWithAbort(controller);
+  renderAbortButton(controller);
 });
