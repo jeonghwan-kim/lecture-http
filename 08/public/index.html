@@ -69,15 +69,19 @@
 
         try {
           // 1. 요청 
-          const response = await ky.get('/api/success', {
+          const response = await ky.get('/api/fail', {
             hooks: { 
               beforeRequest: [ attachCustomeHeaders ] 
             }
-          }).text()
+          })
           console.log('response:', response)
+          console.log(ky.KyResponse)
         } catch (error) {
           // 2. 오류
           console.log('error:', error)
+          console.log('error.name:', error.name)
+          console.log('error.message:', error.message)
+          console.log('error.response:', error.response)
         }
       }
 
@@ -109,8 +113,8 @@
       
       // 아래 주석을 하나씩 제거하면서 라이브러리를 테스트한다.
       // testSuperagent();
-      testAxios()  
-      // testKy()
+      // testAxios()  
+      testKy()
       // testWretch()
     </script>
   </head>
