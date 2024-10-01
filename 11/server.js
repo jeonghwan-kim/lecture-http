@@ -56,6 +56,7 @@ function subscribe(req, res) {
   const lastEventId = req.headers["last-event-id"];
   if (lastEventId) {
     // 클라이언트가 받지 못한 이벤트를 응답한다.
+    // 예시: lastEventId: 1727766842240
     console.log("lastEventId:", lastEventId);
   }
 }
