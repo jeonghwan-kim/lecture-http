@@ -18,14 +18,20 @@ async function longPollServer() {
   longPollServer();
 }
 
+/**
+ * 메세지 객체를 화면에 출력한다.
+ */
 function render(message) {
+  // p 앨리먼트를 만들어
   const messageElement = document.createElement("p");
-  messageElement.textContent = `${message.text} (${new Date(
-    message.timestamp
-  ).toLocaleTimeString()})`;
 
-  const appEl = document.querySelector("#app");
-  appEl.appendChild(messageElement);
+  // 출력할 텍스트와 시간을 준비한다.
+  const { text } = message;
+  const timestamp = new Date(message.timestamp).toLocaleTimeString();
+
+  // 앨리먼트에 출력한다.
+  messageElement.textContent = `${text} (${timestamp})`;
+  document.body.appendChild(messageElement);
 }
 
 document.addEventListener("DOMContentLoaded", longPollServer);

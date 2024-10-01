@@ -54,11 +54,13 @@ function longPoll(req, res) {
   }
 
   // 데이터가 있으면 응답하고 비운다.
-  res.writeHead(200, {
-    "content-type": "application/json",
-  });
-  res.end(`${latestMessage}`);
-  latestMessage = null;
+  if (!res.headersSent) {
+    res.writeHead(200, {
+      "content-type": "application/json",
+    });
+    res.end(`${latestMessage}`);
+    latestMessage = null;
+  }
 }
 
 /**
@@ -95,14 +97,18 @@ function update(req, res) {
 
     // 대기열에있는 클라이언트에게 응답한다.
     for (const waitingClient of waitingClients) {
-      waitingClient.writeHead(200, {
-        "content-type": "application/json",
-      });
-      waitingClient.end(`${latestMessage}`);
+      if (!waitingClient.headersSent) {
+        waitingClient.writeHead(200, {
+          "content-type": "application/json",
+        });
+        waitingClient.end(`${latestMessage}`);
+      }
     }
 
-    // 본 요청한 클라이언트에게도 응답한다.
-    res.end(`${latestMessage}`);
+    if (!res.headersSent) {
+      // 본 요청한 클라이언트에게도 응답한다.
+      res.end(`${latestMessage}`);
+    }
 
     // 메세지와 클라이언트 대기열을 비운다
     latestMessage = null;
