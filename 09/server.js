@@ -1,15 +1,23 @@
 const http = require("http");
-const fs = require("fs");
 const path = require("path");
+const static = require("../shared/serve-static");
 
 /**
  * 채팅 메세지
  */
 class Message {
+  /**
+   * text와 인스턴스 생성 시간을 저장합니다.
+   */
   constructor(text) {
     this.text = text;
     this.timestamp = Date.now();
   }
+
+  /**
+   * 텍스트를 문자열로 변환합니다.
+   * HTTP 응답 본문에에 사용할 겁니다.
+   */
   toString() {
     return JSON.stringify({
       text: this.text,
@@ -20,43 +28,31 @@ class Message {
 
 /**
  * 신규 메세지
+ * 클라이언트가 메세지를 서버에 전달하면 이 변수에 담아 둘겁니다.
+ * 조회용 HTTP 요청이 오면 이 메세지를 응답 본문에 실어줄 거게요.
  */
-let message = null;
-
-function static(req, res) {
-  const { pathname } = new URL(req.url, `http://${req.headers.host}`);
-
-  const filename = pathname.replace(/^\//, "") || "index.html";
-  const filepath = path.resolve(__dirname, "public", filename);
-
-  fs.readFile(filepath, (err, data) => {
-    if (err) {
-      console.error(err);
-      res.end("Error");
-      return;
-    }
-
-    res.end(data);
-  });
-}
+let latestMessage = null;
 
 /**
  * 채팅 메세지를 조회한다.
  */
 function poll(req, res) {
-  // 데이터가 없으면 204 헤더만 응답한다.
-  if (!message) {
+  // 채팅 메세지가 없으면 204 No Content 상태코드를 응답합니다.
+  // 메세지 본문은 비워둡니다.
+  if (!latestMessage) {
     res.writeHead(204);
     res.end();
     return;
   }
 
-  // 데이터가 있으면 응답하고 비운다.
+  // 채팅 메세지가 있으면 응답 본문에 실어서 보냅니다.
   res.writeHead(200, {
     "content-type": "application/json",
   });
-  res.end(`${message}`);
-  message = null;
+  res.end(`${latestMessage}`);
+
+  // 다음 메세지를 응답하기위해 message 변수는 비웠습니다.
+  latestMessage = null;
 }
 
 /**
@@ -88,31 +84,23 @@ function update(req, res) {
       return;
     }
 
-    message = new Message(text);
+    latestMessage = new Message(text);
 
     res.writeHead(200, {
       "content-type": "application/json",
     });
-    res.end(`${message}`);
+    res.end(`${latestMessage}`);
   });
 }
 
-/**
- * HTTP 요청을 로깅한다.
- */
-const log = (req, res) => {
-  console.log(`${req.method} ${req.url}`);
-};
-
 const server = http.createServer((req, res) => {
-  log(req, res);
-
   const { pathname } = new URL(req.url, `http://${req.headers.host}`);
 
   if (pathname === "/poll") return poll(req, res);
   if (pathname === "/update") return update(req, res);
 
-  static(req, res);
+  // 정적 파일 요청을 처리한다.
+  static(path.join(__dirname, "public"))(req, res);
 });
 
 server.listen(3000, () => {
