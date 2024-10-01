@@ -46,8 +46,9 @@ const wss = new WebSocketServer({ server });
  */
 let webSocketClients = [];
 
+// 클라이언트와 핸드쉐이킹
 wss.on("connection", (webScoket) => {
-  console.log("connections");
+  console.log("connection handshaking");
 
   // 환영의 인사
   const message = new Message("서버와 연결되었습니다.");
@@ -56,14 +57,17 @@ wss.on("connection", (webScoket) => {
   // 클라이언트가 연결되면 대기열에 추가한다.
   webSocketClients.push(webScoket);
 
+  // 클라이언트로부터 메세지를 받은 경우
   webScoket.on("message", (data) => {
     // 대기열에 있는 클라이언트에게 메세지를 전달한다.
     for (const webSocketClient of webSocketClients) {
-      const message = new Message(
-        `${webScoket === webSocketClient ? "me:" : "other:"} ${data.toString(
-          "utf-8"
-        )}`
-      );
+      // 대기열에 있는 클라이언트에게 전달할 메세지
+      const text = `${
+        webScoket === webSocketClient ? "me:" : "other:"
+      } ${data.toString("utf-8")}`;
+      const message = new Message(text);
+
+      // 메세지를 전달
       webSocketClient.send(`${message}`);
     }
   });
