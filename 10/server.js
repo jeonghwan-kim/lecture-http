@@ -1,15 +1,23 @@
 const http = require("http");
-const fs = require("fs");
 const path = require("path");
+const static = require("../shared/serve-static");
 
 /**
  * 채팅 메세지
  */
 class Message {
+  /**
+   * text와 인스턴스 생성 시간을 저장합니다.
+   */
   constructor(text) {
     this.text = text;
     this.timestamp = Date.now();
   }
+
+  /**
+   * 텍스트를 문자열로 변환합니다.
+   * HTTP 응답 본문에에 사용할 겁니다.
+   */
   toString() {
     return JSON.stringify({
       text: this.text,
@@ -21,35 +29,18 @@ class Message {
 /**
  * 신규 메세지
  */
-let message = null;
+let latestMessage = null;
 /**
  * 응답 대기중인 클라이언트들
  */
 let waitingClients = [];
-
-function static(req, res) {
-  const { pathname } = new URL(req.url, `http://${req.headers.host}`);
-
-  const filename = pathname.replace(/^\//, "") || "index.html";
-  const filepath = path.resolve(__dirname, "public", filename);
-
-  fs.readFile(filepath, (err, data) => {
-    if (err) {
-      console.error(err);
-      res.end("Error");
-      return;
-    }
-
-    res.end(data);
-  });
-}
 
 /**
  * 채팅 메세지를 조회한다.
  */
 function longPoll(req, res) {
   // 데이터가 없으면 응답을 지연한다.
-  if (!message) {
+  if (!latestMessage) {
     // 클라이언트 대기열에 추가한다.
     waitingClients.push(res);
 
@@ -66,8 +57,8 @@ function longPoll(req, res) {
   res.writeHead(200, {
     "content-type": "application/json",
   });
-  res.end(`${message}`);
-  message = null;
+  res.end(`${latestMessage}`);
+  latestMessage = null;
 }
 
 /**
@@ -100,40 +91,33 @@ function update(req, res) {
     }
 
     // 메세지를 만들고 기억해 둔다.
-    message = new Message(text);
+    latestMessage = new Message(text);
 
+    // 대기열에있는 클라이언트에게 응답한다.
     for (const waitingClient of waitingClients) {
       waitingClient.writeHead(200, {
         "content-type": "application/json",
       });
-      waitingClient.end(`${message}`);
+      waitingClient.end(`${latestMessage}`);
     }
 
-    // 본 요청한 클라이언트에게 응답한다.
-    res.end(`${message}`);
+    // 본 요청한 클라이언트에게도 응답한다.
+    res.end(`${latestMessage}`);
 
     // 메세지와 클라이언트 대기열을 비운다
-    message = null;
+    latestMessage = null;
     waitingClients = [];
   });
 }
 
-/**
- * HTTP 요청을 로깅한다.
- */
-const log = (req, res) => {
-  console.log(`${req.method} ${req.url}`);
-};
-
 const server = http.createServer((req, res) => {
-  log(req, res);
-
   const { pathname } = new URL(req.url, `http://${req.headers.host}`);
 
   if (pathname === "/longpoll") return longPoll(req, res);
   if (pathname === "/update") return update(req, res);
 
-  static(req, res);
+  // 정적 파일 요청을 처리한다.
+  static(path.join(__dirname, "public"))(req, res);
 });
 
 server.listen(3000, () => {
