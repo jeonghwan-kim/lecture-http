@@ -1,5 +1,4 @@
 const http = require("http");
-const fs = require("fs");
 const path = require("path");
 const static = require("../shared/serve-static");
 
@@ -99,8 +98,12 @@ function update(req, res) {
         [
           // 재시도 간격 (밀리초 단위)
           `retry: 10000\n`,
+
           // 이벤트 식별자
+          // id 필드를 추가했습니다. 식별자로 타임스탬프, 생성시간을 사용했습니다.
+          // 이벤트를 받은 브라우져는 재접속할 때 이 값을 last-event-id 헤더에 실어 되돌려 줄 것입니다.
           `id: ${message.timestamp}\n`,
+
           // 이벤트 데이터
           // 알림 메세지이기 때문에 data 필드를 사용해 이벤트를 응답 본문에 실었습니다.
           // 이벤트를 여러 번 보낼 수 있는데요. 개행문자로 구분합니다.
