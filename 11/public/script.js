@@ -43,4 +43,5 @@ function render(message) {
   messageElement.textContent = `${text} (${timestamp})`;
   document.body.appendChild(messageElement);
 }
+
 document.addEventListener("DOMContentLoaded", subscribe);
