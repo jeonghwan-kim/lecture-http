@@ -98,24 +98,29 @@
           // 1. 요청 
           const response = await wretch()
             .middlewares([attachCustomHeader])
-            .get('/api/success')
+            .get('/api/not-found')
             .notFound(err => {
+              // 오류 전용 캐처
+              // 404 오류를 처리하는 함수를 등록할 수 있다.
               console.log('notFound', err)
               return err.text
             })
-            .text()
+            .json()
           console.log('response:', response)
         } catch (error) {
           // 2. 오류
           console.log('error:', error)
+          console.log('error.status:', error.status)
+          console.log('error.response:', error.response)
+          console.log('error.json.result:', error.json.result)
         }
       }
       
       // 아래 주석을 하나씩 제거하면서 라이브러리를 테스트한다.
       // testSuperagent();
       // testAxios()  
-      testKy()
-      // testWretch()
+      // testKy()
+      testWretch()
     </script>
   </head>
   <body>
