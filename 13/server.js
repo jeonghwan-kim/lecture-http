@@ -17,6 +17,21 @@ const database = {
 };
 
 /**
+ * 쿠키를 파싱해 객체로 반환한다.
+ */
+function parseCookie(req) {
+  const cookies = (req.headers.cookie || "").split(";");
+
+  const cookieObj = {};
+  cookies.forEach((cookie) => {
+    const [name, value] = cookie.trim().split("=");
+    cookieObj[decodeURIComponent(name)] = decodeURIComponent(value);
+  });
+
+  return cookieObj;
+}
+
+/**
  * HTTP 요청을 로깅한다.
  */
 const log = (req, res) => {
@@ -49,31 +64,58 @@ function postProduct(req, res) {
   });
 }
 
-// 쿠키를 파싱해 객체로 반환한다.
-function parseCookie(req) {
-  const cookies = (req.headers.cookie || "").split(";");
+/**
+ * 결재한다.
+ */
+function postPayment(req, res) {
+  // 쿠키를 파싱해 세션 아이디를 얻는다.
+  const sid = parseCookie(req)["sid"] || "";
+  // 유효한 세션인지 확인한다.
+  const userAccount = database.session[sid] || "";
 
-  const cookieObj = {};
-  cookies.forEach((cookie) => {
-    const [name, value] = cookie.trim().split("=");
-    cookieObj[decodeURIComponent(name)] = decodeURIComponent(value);
-  });
+  console.log(sid, userAccount, req.headers.cookie);
+  // 인증된 요청이 아닌경우
+  if (!userAccount) {
+    // 401 Unauthorized
+    res.writeHead(401);
+    res.end("Payment Fail");
+    return;
+  }
 
-  return cookies;
+  // 인증된 요청일 경우 해당 유저로 결제한다.
+  res.end(`Payment Success: ${userAccount.name}`);
 }
 
+function report(req, res) {
+  log(req, res);
+
+  let body = "";
+  req.on("data", (chunk) => {
+    body = body + chunk.toString();
+  });
+  req.on("end", () => {
+    const report = JSON.parse(body);
+    console.log("CSP Report:", report);
+    res.end();
+  });
+}
+
+/**
+ * HTML 문서를 응답한다.
+ */
 function index(req, res) {
   res.writeHead(200, {
     "Content-Type": "text/html",
 
     // 쿠키로 세션 아이디를 전달한다.
-    "set-cookie": "sid=session-001;",
+    // "set-cookie": "sid=session-001;",
 
     // 자바스크립트로 쿠키 접근을 차단한다. (세션 하이재킹 예방)
-    "set-cookie": "sid=my-sid; httpOnly=true;",
+    // "set-cookie": "sid=session-001; httpOnly=true;",
 
     // 다른 출처에서 쿠키를 차단한다. (CSRF 예방)
-    // "set-cookie": "sid=session-001; SameSite=Strict;",
+    "set-cookie": "sid=session-001; SameSite=Strict;",
+
     // 현재 출처의 자원만 사용하라.
     // "Content-Security-Policy": "default-src 'self';",
     // "Content-Security-Policy-Report-Only":
@@ -113,26 +155,13 @@ function index(req, res) {
   `);
 }
 
-function report(req, res) {
-  log(req, res);
-
-  let body = "";
-  req.on("data", (chunk) => {
-    body = body + chunk.toString();
-  });
-  req.on("end", () => {
-    const report = JSON.parse(body);
-    console.log("CSP Report:", report);
-    res.end();
-  });
-}
-
 const server = http.createServer((req, res) => {
   log(req, res);
 
   const { pathname } = new URL(req.url, `http://${req.headers.host}`);
 
   if (pathname === "/product") return postProduct(req, res);
+  if (pathname === "/payment") return postPayment(req, res);
   if (pathname === "/report") return report(req, res);
 
   return index(req, res);
