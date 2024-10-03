@@ -115,7 +115,7 @@ function index(req, res) {
     "Content-Type": "text/html",
 
     // 쿠키로 세션 아이디를 전달한다.
-    "set-cookie": "sid=session-001;",
+    // "set-cookie": "sid=session-001;",
 
     // 자바스크립트로 쿠키 접근을 차단한다. (세션 하이재킹 예방)
     // "set-cookie": "sid=session-001; httpOnly=true;",
@@ -127,8 +127,8 @@ function index(req, res) {
     // "Content-Security-Policy": "default-src 'self';",
 
     // 현재 출처의 자원만 사용한다.(진단만 하고 차단하지 않음)
-    "Content-Security-Policy-Report-Only":
-      "default-src 'self'; report-uri /report",
+    // "Content-Security-Policy-Report-Only":
+    //   "default-src 'self'; report-uri /report",
   });
 
   // 쿠키를 파싱해 세션 아이디를 얻는다.
@@ -146,7 +146,6 @@ function index(req, res) {
               font-family: 'MyCustomFont';
               src: url('http://other-origin.com/MyCustomFont.woff2');
           }
-              
         </style>
       </head>
       <body style="font-family: 'MyCustomFont'">
