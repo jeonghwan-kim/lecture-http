@@ -8,6 +8,7 @@ const querystring = require("querystring");
 const database = {
   products: ["Product 1", "Product 2"],
   session: {
+    // 세션을 생성한다.
     "session-001": {
       name: "Alice",
       email: "alice@email.com",
@@ -35,8 +36,11 @@ function postProduct(req, res) {
   // 요청 본문이 모두 도착할 경우
   req.on("end", () => {
     const { product } = querystring.parse(body);
-    const escapedProduct = product.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    database.products.push(escapedProduct);
+    database.products.push(product);
+
+    // 이스케이프 처리
+    // const escapedProduct = product.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    // database.products.push(escapedProduct);
 
     res.writeHead(302, {
       Location: "/",
@@ -45,12 +49,29 @@ function postProduct(req, res) {
   });
 }
 
+// 쿠키를 파싱해 객체로 반환한다.
+function parseCookie(req) {
+  const cookies = (req.headers.cookie || "").split(";");
+
+  const cookieObj = {};
+  cookies.forEach((cookie) => {
+    const [name, value] = cookie.trim().split("=");
+    cookieObj[decodeURIComponent(name)] = decodeURIComponent(value);
+  });
+
+  return cookies;
+}
+
 function index(req, res) {
   res.writeHead(200, {
     "Content-Type": "text/html",
+
+    // 쿠키로 세션 아이디를 전달한다.
     "set-cookie": "sid=session-001;",
+
     // 자바스크립트로 쿠키 접근을 차단한다. (세션 하이재킹 예방)
-    // "set-cookie": "sid=my-sid; httpOnly=true;",
+    "set-cookie": "sid=my-sid; httpOnly=true;",
+
     // 다른 출처에서 쿠키를 차단한다. (CSRF 예방)
     // "set-cookie": "sid=session-001; SameSite=Strict;",
     // 현재 출처의 자원만 사용하라.
@@ -59,25 +80,16 @@ function index(req, res) {
     // "default-src 'self'; report-uri /report",
   });
 
-  const cookies = (req.headers.cookie || "").split(";");
-
-  console.log("cookie", req.headers.cookie);
-
-  const cookieObj = {};
-  cookies.forEach((cookie) => {
-    const [name, value] = cookie.trim().split("=");
-    cookieObj[decodeURIComponent(name)] = decodeURIComponent(value);
-  });
-
-  const sid = cookieObj["sid"] || "";
+  // 쿠키를 파싱해 세션 아이디를 얻는다.
+  const sid = parseCookie(req)["sid"] || "";
+  // 유효한 세션인지 확인한다.
   const userAccount = database.session[sid] || "";
-
-  // console.log(userAccount);
 
   res.end(`
     <!DOCTYPE html>
     <html>
       <head>
+        <meta charset="UTF-8" />
         <style>
           @font-face {
               font-family: 'MyCustomFont';
