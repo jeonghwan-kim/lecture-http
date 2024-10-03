@@ -86,16 +86,23 @@ function postPayment(req, res) {
   res.end(`Payment Success: ${userAccount.name}`);
 }
 
+// CSP 진단 결과를 받는다.
 function report(req, res) {
   log(req, res);
 
   let body = "";
+
   req.on("data", (chunk) => {
     body = body + chunk.toString();
   });
+
   req.on("end", () => {
+    // JSON 형태의 본문을 받는다.
     const report = JSON.parse(body);
+
+    // 리포트를 출력합니다.
     console.log("CSP Report:", report);
+
     res.end();
   });
 }
@@ -108,18 +115,20 @@ function index(req, res) {
     "Content-Type": "text/html",
 
     // 쿠키로 세션 아이디를 전달한다.
-    // "set-cookie": "sid=session-001;",
+    "set-cookie": "sid=session-001;",
 
     // 자바스크립트로 쿠키 접근을 차단한다. (세션 하이재킹 예방)
     // "set-cookie": "sid=session-001; httpOnly=true;",
 
     // 다른 출처에서 쿠키를 차단한다. (CSRF 예방)
-    "set-cookie": "sid=session-001; SameSite=Strict;",
+    // "set-cookie": "sid=session-001; SameSite=Strict;",
 
-    // 현재 출처의 자원만 사용하라.
+    // 현재 출처의 자원만 사용한다.
     // "Content-Security-Policy": "default-src 'self';",
-    // "Content-Security-Policy-Report-Only":
-    // "default-src 'self'; report-uri /report",
+
+    // 현재 출처의 자원만 사용한다.(진단만 하고 차단하지 않음)
+    "Content-Security-Policy-Report-Only":
+      "default-src 'self'; report-uri /report",
   });
 
   // 쿠키를 파싱해 세션 아이디를 얻는다.
