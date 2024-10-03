@@ -4,12 +4,6 @@
 
 const http = require("http");
 const querystring = require("querystring");
-/**
- * HTTP 요청을 로깅한다.
- */
-const log = (req, res) => {
-  console.log(`${req.method} ${req.url}`);
-};
 
 const database = {
   products: ["Product 1", "Product 2"],
@@ -21,6 +15,16 @@ const database = {
   },
 };
 
+/**
+ * HTTP 요청을 로깅한다.
+ */
+const log = (req, res) => {
+  console.log(`${req.method} ${req.url}`);
+};
+
+/**
+ * 상품을 추가한다.
+ */
 function postProduct(req, res) {
   // 요청 본문을 담을 변수
   let body = "";
@@ -31,7 +35,8 @@ function postProduct(req, res) {
   // 요청 본문이 모두 도착할 경우
   req.on("end", () => {
     const { product } = querystring.parse(body);
-    database.products.push(product);
+    const escapedProduct = product.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    database.products.push(escapedProduct);
 
     res.writeHead(302, {
       Location: "/",
@@ -55,7 +60,9 @@ function index(req, res) {
   });
 
   const cookies = (req.headers.cookie || "").split(";");
+
   console.log("cookie", req.headers.cookie);
+
   const cookieObj = {};
   cookies.forEach((cookie) => {
     const [name, value] = cookie.trim().split("=");
@@ -81,6 +88,7 @@ function index(req, res) {
       </head>
       <body style="font-family: 'MyCustomFont'">
         ${userAccount ? `${userAccount.name}, ${userAccount.email}` : ""}
+        <!--  1. 사용자가 텍스트를 입력할 수 있는 폼. 텍스트를 입력하면 서버에 전달됩니다. -->
         <form method="POST" action="/product">
           <input name="product" type="text" />
           <button type="submit">Add</button>
