@@ -41,6 +41,12 @@ function serveStatic(root) {
         case ".png":
           contentType = "image/png";
           break;
+        case ".json":
+          contentType = "application/json";
+          break;
+        case ".otf":
+          contentType = "font/otf";
+          break;
         default:
           contentType = "application/octet-stream";
       }
