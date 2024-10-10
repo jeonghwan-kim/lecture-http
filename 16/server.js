@@ -1,9 +1,10 @@
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
+const static = require("../shared/serve-static");
 
 // 정적 파일 서빙을 위한 static 함수
-function static(rootDir) {
+function DEPRECATED_static(rootDir) {
   return function (req, res) {
     const filePath = path.join(
       rootDir,
@@ -77,8 +78,24 @@ function static(rootDir) {
 }
 
 // HTTP 서버 생성
-const server = http.createServer(static(path.join(__dirname, "public")));
+const server = http.createServer((req, res) => {
+  const fileName = path.basename(req.url);
+  console.log(fileName);
 
-server.listen(3000, () => {
-  console.log("Server running at http://localhost:3000/");
+  // 3초 지연 응답
+  if (fileName === "script-long.js") {
+    res.delayMs = 3000;
+  }
+  // 1초 지연 응답
+  if (fileName === "script-short.js") {
+    res.delayMs = 1000;
+  }
+  static(path.join(__dirname, "public"))(req, res);
+});
+
+// 환경변수 PORT에서 포트 번호를 가져온다. 기본값은 3000
+const port = process.env.PORT || 3000;
+// 해당 포트에서 요청을 기다린다.
+server.listen(port, () => {
+  console.log(`server is running ::${port}`);
 });

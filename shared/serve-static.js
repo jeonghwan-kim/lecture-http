@@ -54,6 +54,14 @@ function serveStatic(root) {
         "Content-Type": contentType,
       });
 
+      // delayMs가 설정된 경우 그 시간만큼 지연 응답한다.
+      if (res.delayMs) {
+        setTimeout(() => {
+          res.end(data);
+        }, res.delayMs);
+        return;
+      }
+
       // 파일 내용을 본문에 실어 응답한다.
       res.end(data);
     });
