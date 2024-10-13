@@ -90,6 +90,10 @@ const server = http.createServer((req, res) => {
   if (fileName === "script-short.js") {
     res.delayMs = 1000;
   }
+  // 이미지 1초 지연 응답
+  if (fileName === "image.png") {
+    res.delayMs = 1000;
+  }
   static(path.join(__dirname, "public"))(req, res);
 });
 

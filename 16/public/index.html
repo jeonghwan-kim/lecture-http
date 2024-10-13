@@ -20,25 +20,32 @@
         });
       });
     </script>
-    <!-- <link rel="prefetch" href="index-next.html" as="html"/>
-     <link rel="preload" href="image.png" as="image" /> -->
+    <!-- <link rel="prefetch" href="index-next.html" as="html"/> -->
+    <link rel="preload" href="image.png" as="image" />
   </head>
   <body>
     <!-- <h1>Hello World</h1> -->
-    <!-- <button id="addImageButton">Add Image</button> -->
+
+    <!-- 이미지를 웹 문서에 추가하는 버튼 -->
+    <button id="addImageButton">Add Image</button>
+
     <!-- <a href="index-next.html">Next Page</a> -->
     <!-- <img src="image.png" alt="image.png" loading="lazy" /> -->
     <!-- <div style="height: 1000px; border: solid 1px black">Empty Box</div> -->
     <!-- <img src="image2.png" alt="image2.png" loading="lazy" /> -->
-    <!-- <script>
+    <script>
+      // 버튼을 클릭하면 동작할 핸들러입니다.
       document
         .querySelector("#addImageButton")
         .addEventListener("click", () => {
+          // 이미지 앨리먼트를 만들고
           const img = document.createElement("img");
+          // 원격지의 image.png 파일을 로딩합니다.
           img.src = "image.png";
+          // 이미지 앨리먼트를 문서 끝에 추가합니다.
           document.body.appendChild(img);
         });
-    </script> -->
+    </script>
 
     <script>
       // script-long.js 시작 시각을 표시
