@@ -20,8 +20,14 @@
         });
       });
     </script>
-    <!-- <link rel="prefetch" href="index-next.html" as="html"/> -->
+
+    <!-- 용량이 큰 이미지는 미리 다운로드한다. -->
+    <!-- 현재 문서에서 사용할 이미지이기 때문이다.-->
     <link rel="preload" href="image.png" as="image" />
+
+    <!-- 현재 문서의 링크에 있는 자원을 미리 다운로드한다.  -->
+    <!-- 다음 페이지에서 사용할 가능성이 크기 때문이다.. -->
+    <link rel="prefetch" href="index-next.html" as="html" />
   </head>
   <body>
     <!-- <h1>Hello World</h1> -->
@@ -29,7 +35,9 @@
     <!-- 이미지를 웹 문서에 추가하는 버튼 -->
     <button id="addImageButton">Add Image</button>
 
-    <!-- <a href="index-next.html">Next Page</a> -->
+    <!-- 다음 페이지로 이동할 링크 -->
+    <a href="index-next.html">Next Page</a>
+
     <!-- <img src="image.png" alt="image.png" loading="lazy" /> -->
     <!-- <div style="height: 1000px; border: solid 1px black">Empty Box</div> -->
     <!-- <img src="image2.png" alt="image2.png" loading="lazy" /> -->

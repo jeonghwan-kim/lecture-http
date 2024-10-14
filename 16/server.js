@@ -86,14 +86,28 @@ const server = http.createServer((req, res) => {
   if (fileName === "script-long.js") {
     res.delayMs = 3000;
   }
+
   // 1초 지연 응답
   if (fileName === "script-short.js") {
     res.delayMs = 1000;
   }
+
   // 이미지 1초 지연 응답
   if (fileName === "image.png") {
     res.delayMs = 1000;
   }
+
+  // next.html 페이지 3초 지연 응답
+  if (fileName === "index-next.html") {
+    // 3초정도 지연해서 응답했습니다. 그만큼 무거운 자원이라는 것을 흉내낸 것입니다.
+    res.delayMs = 3000;
+
+    // 프리패치 동작을 고려해 캐시 콘트롤 헤더도 실었습니다.
+    // (크롬은 없이도 잘됨. 파이어폭스는 설정해야함.)
+    // 참고: https://github.com/withastro/astro/issues/10464#issuecomment-2004349379
+    res.setHeader("Cache-Control", "max-age=3600");
+  }
+
   static(path.join(__dirname, "public"))(req, res);
 });
 
