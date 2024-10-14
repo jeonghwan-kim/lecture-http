@@ -25,8 +25,30 @@ function serveStatic(root) {
         return;
       }
 
+      // 파일 수정 시간과 크기로 etag 값을 만든다.
+      const etag = `${stat.mtime.getTime().toString(16)}-${stat.size.toString(
+        16
+      )}`;
       // 파일 수정 시간을 읽는다.
       const modified = stat.mtime;
+
+      if (req.headers["if-none-match"]) {
+        // 요청 헤더에서 태그를 조회한다.
+        const noneMatch = req.headers["if-none-match"];
+
+        // 파일의 etag 값과 비교한다.
+        const isFresh = noneMatch === etag;
+
+        // etag 값이 같으면
+        if (isFresh) {
+          // TODO: redirect(res)
+          // 응답 헤더에 `304 Not Modified` 상태 코드를 실습니다.
+          res.writeHead(304);
+          // 파일을 다시 제공할 필요가 없습니다. 본문은 비워서 작고 빠르게 응답합니다.
+          res.end();
+          return;
+        }
+      }
 
       // 시간 기반 캐싱: If-Modified-Since 헤더가 있는 경우
       if (req.headers["if-modified-since"]) {
@@ -50,6 +72,9 @@ function serveStatic(root) {
         }
       }
 
+      // 파일 해시값을 응답 헤더이 실는다.
+      console.log(etag);
+      res.setHeader("ETag", etag);
       // 파일 수정 시간을 응답 헤더에 실는다.
       res.setHeader("Last-Modified", modified.toUTCString());
 
