@@ -34,13 +34,6 @@
 
     <!-- 이미지를 웹 문서에 추가하는 버튼 -->
     <button id="addImageButton">Add Image</button>
-
-    <!-- 다음 페이지로 이동할 링크 -->
-    <a href="index-next.html">Next Page</a>
-
-    <!-- <img src="image.png" alt="image.png" loading="lazy" /> -->
-    <!-- <div style="height: 1000px; border: solid 1px black">Empty Box</div> -->
-    <!-- <img src="image2.png" alt="image2.png" loading="lazy" /> -->
     <script>
       // 버튼을 클릭하면 동작할 핸들러입니다.
       document
@@ -55,16 +48,26 @@
         });
     </script>
 
+    <!-- 다음 페이지로 이동할 링크 -->
+    <a href="index-next.html">Next Page</a>
+
+    <!-- 용량이 큰 이미지  -->
+    <img src="image.png" alt="image.png" loading="lazy" />
+    <!--  아래 이미지를 뷰 표트 밖에 밀어내기 위한 빈 공간 -->
+    <div style="height: 1000vh; border: solid 1px black">Empty Box</div>
+    <!-- 용량이 큰 이미지  -->
+    <img src="image2.png" alt="image2.png" loading="lazy" />
+
     <script>
       // script-long.js 시작 시각을 표시
       performance.mark("script-long-start");
     </script>
-    <script src="script-long.js" defer></script>
+    <!-- <script src="script-long.js" defer></script> -->
 
     <script>
       // script-short.js 시작 시각을 표시
       performance.mark("script-short-start");
     </script>
-    <script src="script-short.js" defer></script>
+    <!-- <script src="script-short.js" defer></script> -->
   </body>
 </html>
