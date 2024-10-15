@@ -73,7 +73,6 @@ function serveStatic(root) {
       }
 
       // 파일 해시값을 응답 헤더이 실는다.
-      console.log(etag);
       res.setHeader("ETag", etag);
       // 파일 수정 시간을 응답 헤더에 실는다.
       res.setHeader("Last-Modified", modified.toUTCString());
@@ -120,6 +119,16 @@ function serveStatic(root) {
             contentType = "application/octet-stream";
         }
         res.setHeader("Content-Type", contentType);
+
+        if (ext === ".js") {
+          // 자바스크립트면 1년간 캐시한다
+          res.setHeader("Cache-Control", "max-age=31536000");
+        } else if (ext === ".html") {
+          // HTML이면 캐시 유효성을 매번 확인한다.
+          res.setHeader("Cache-Control", "no-cache");
+        } else {
+          // 다른 파일은 설정하지 않는다.
+        }
 
         // delayMs가 설정된 경우 그 시간만큼 지연 응답한다.
         if (res.delayMs) {
