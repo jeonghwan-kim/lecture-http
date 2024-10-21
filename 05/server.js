@@ -34,13 +34,13 @@ function getLogin(req, res) {
 
   // 인증 실패
   if (!authenticated) {
-    res.writeHead(401);
-    res.end("Unauthorized");
+    res.statusCode = 401;
+    res.end("Unauthorized\n");
     return;
   }
 
   // 인증 성공
-  res.end("Success");
+  res.end("Success\n");
 }
 
 // 로그인 함수입니다. (POST 요청 처리 용)
@@ -62,13 +62,15 @@ function postLogin(req, res) {
 
     // 인증 실패
     if (!authenticated) {
-      res.writeHead(401);
-      res.end("Unauthorized");
+      res.statusCode = 401;
+      res.write("Unauthorized\n");
+      res.end();
       return;
     }
 
     // 인증 성공
-    res.end("Success");
+    res.wirte("Success\n");
+    res.end();
   });
 }
 

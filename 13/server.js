@@ -60,22 +60,20 @@ function login(req, res) {
     [sid]: user,
   };
 
-  res.writeHead(301, {
-    // 쿠키로 세션 아이디를 전달한다.
-    "set-cookie": `sid=${sid};`,
+  res.statusCode = 301;
 
-    // 자바스크립트로 쿠키 접근을 차단한다. (세션 하이재킹 예방)
-    // "set-cookie": "sid=session-001; httpOnly=true;",
-
-    // 다른 출처에서 쿠키를 차단한다. (CSRF 예방)
-    // "set-cookie": "sid=session-001; SameSite=Strict;",
-
-    // 루트 경로로 이동한다.
-    Location: "/",
-  });
+  // 쿠키로 세션 아이디를 전달한다.
+  res.setHeader("set-cookie", `sid=${sid};`);
+  // 루트 경로로 이동한다.
+  // res.setHeader(Location, "/");
+  // 자바스크립트로 쿠키 접근을 차단한다. (세션 하이재킹 예방)
+  // res.setHeader("set-cookie", "sid=session-001; httpOnly=true;");
+  // 다른 출처에서 쿠키를 차단한다. (CSRF 예방)
+  // res.setHeader("set-cookie", "sid=session-001; SameSite=Strict;");
 
   // 응답을 보낸다.
-  res.end("Login success");
+  res.write("Login success\n");
+  res.end();
 }
 
 /**
@@ -89,16 +87,16 @@ function logout(req, res) {
   delete database.session[sid];
 
   // 쿠키를 지운다.
-  res.writeHead(301, {
-    // sid를 지운다. 유효기간을 음수로 지정해 브라우져가 쿠키를 지울 것이다.
-    "set-cookie": "sid=;Max-Age=-1",
+  res.statusCode = 301;
 
-    // 루트 경로로 이동한다.
-    Location: "/",
-  });
+  // sid를 지운다. 유효기간을 음수로 지정해 브라우져가 쿠키를 지울 것이다.
+  res.setHeader("set-cookie", "sid=;Max-Age=-1");
+  // 루트 경로로 이동한다.
+  res.setHeader(Location, "/");
 
   // 응답을 보낸다.
-  res.end("Logout success");
+  res.write("Logout success\n");
+  res.end();
 }
 
 /**
@@ -120,9 +118,8 @@ function postProduct(req, res) {
     // const escapedProduct = product.replace(/</g, "&lt;").replace(/>/g, "&gt;");
     // database.products.push(escapedProduct);
 
-    res.writeHead(302, {
-      Location: "/",
-    });
+    res.statusCode = 302;
+    res.setHeader(Location, "/");
     res.end();
   });
 }
@@ -140,13 +137,15 @@ function postPayment(req, res) {
   // 인증된 요청이 아닌경우
   if (!userAccount) {
     // 401 Unauthorized
-    res.writeHead(401);
-    res.end("Payment Fail");
+    res.statusCode = 401;
+    res.write("Payment Fail\n");
+    res.end();
     return;
   }
 
   // 인증된 요청일 경우 해당 유저로 결제한다.
-  res.end(`Payment Success: ${userAccount.name}`);
+  res.write(`Payment Success: ${userAccount.name}\n`);
+  res.end();
 }
 
 // CSP 진단 결과를 받는다.
@@ -174,23 +173,23 @@ function report(req, res) {
  * HTML 문서를 응답한다.
  */
 function index(req, res) {
-  res.writeHead(200, {
-    "Content-Type": "text/html",
+  res.setHeader("Content-Type", "text/html");
 
-    // 현재 출처의 자원만 사용한다.
-    // "Content-Security-Policy": "default-src 'self';",
+  // 현재 출처의 자원만 사용한다.
+  // res.setHeader("Content-Security-Policy", "default-src 'self';");
 
-    // 현재 출처의 자원만 사용한다.(진단만 하고 차단하지 않음)
-    // "Content-Security-Policy-Report-Only":
-    //   "default-src 'self'; report-uri /report",
-  });
+  // 현재 출처의 자원만 사용한다.(진단만 하고 차단하지 않음)
+  // res.setHeader(
+  //   "Content-Security-Policy-Report-Only",
+  //   "default-src 'self'; report-uri /report"
+  // );
 
   // 쿠키를 파싱해 세션 아이디를 얻는다.
   const sid = parseCookie(req)["sid"] || "";
   // 유효한 세션인지 확인한다.
   const userAccount = database.session[sid] || "";
 
-  res.end(`
+  res.write(`
     <!DOCTYPE html>
     <html>
       <head>
@@ -215,6 +214,7 @@ function index(req, res) {
       </body>
     </html>
   `);
+  res.end();
 }
 
 const server = http.createServer((req, res) => {

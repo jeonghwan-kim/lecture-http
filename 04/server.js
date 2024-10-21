@@ -8,7 +8,8 @@ function handler(req, res) {
   // Cookie 요청 헤더가 있고 sid 값이 있다며 이전에 방문한 클라이언트라고 판단할 수 있습니다.
   if (cookie && cookie.includes("sid")) {
     // 이전에 방문한 클라이언트다.
-    res.end("Welcome again.");
+    res.write("Welcome again.\n");
+    res.end();
     return;
   }
 
@@ -22,7 +23,8 @@ function handler(req, res) {
   res.setHeader("Set-Cookie", "sid=1; HttpOnly");
 
   // 첫 방문한 응답 본문 도 실어 보냅니다.
-  res.end("Welcome");
+  res.write("Welcome\n");
+  res.end();
 }
 
 // 위 핸들러로 http 서버 객체를 하나 만듭니다.

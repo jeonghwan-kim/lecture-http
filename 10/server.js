@@ -46,7 +46,7 @@ function longPoll(req, res) {
 
     // 10초간 기다리고 408 Reuqest Timeout을 응답한다.
     res.setTimeout(10000, () => {
-      res.writeHead(408);
+      res.statusCode = 408;
       res.end();
     });
 
@@ -55,10 +55,9 @@ function longPoll(req, res) {
 
   // 데이터가 있으면 응답하고 비운다.
   if (!res.headersSent) {
-    res.writeHead(200, {
-      "content-type": "application/json",
-    });
-    res.end(`${latestMessage}`);
+    res.setHeader("content-type", "application/json");
+    res.write(`${latestMessage}\n`);
+    res.end();
     latestMessage = null;
   }
 }
@@ -81,14 +80,14 @@ function update(req, res) {
     const { text } = JSON.parse(body);
 
     if (!text) {
-      res.writeHead(400, {
-        "content-type": "application/json",
-      });
-      res.end(
+      res.statusCode = 400;
+      res.setHeader("content-type", "application/json");
+      res.body(
         JSON.stringify({
           error: "text 필드를 채워주세요",
         })
       );
+      res.end();
       return;
     }
 
@@ -98,16 +97,16 @@ function update(req, res) {
     // 대기열에있는 클라이언트에게 응답한다.
     for (const waitingClient of waitingClients) {
       if (!waitingClient.headersSent) {
-        waitingClient.writeHead(200, {
-          "content-type": "application/json",
-        });
-        waitingClient.end(`${latestMessage}`);
+        waitingClient.setHeader("content-type", "application/json");
+        waitingClient.write(`${latestMessage}`);
+        waitingClient.end();
       }
     }
 
     if (!res.headersSent) {
       // 본 요청한 클라이언트에게도 응답한다.
-      res.end(`${latestMessage}`);
+      res.body(`${latestMessage}`);
+      res.end();
     }
 
     // 메세지와 클라이언트 대기열을 비운다

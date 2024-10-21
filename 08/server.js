@@ -3,17 +3,16 @@ const path = require("path");
 const static = require("../shared/serve-static");
 
 function success(req, res) {
-  res.writeHead(200, {
-    "content-type": "application/json",
-  });
-  res.end(JSON.stringify({ result: "success" }));
+  res.setHeader("content-type", "application/json");
+  res.write(JSON.stringify({ result: "success" }));
+  res.end();
 }
 
 function fail(req, res) {
-  res.writeHead(400, {
-    "content-type": "application/json",
-  });
-  res.end(JSON.stringify({ result: "fail" }));
+  res.statusCode = 400;
+  res.setHeader("content-type", "application/json");
+  res.body(JSON.stringify({ result: "fail" }));
+  res.end();
 }
 
 const server = http.createServer((req, res) => {

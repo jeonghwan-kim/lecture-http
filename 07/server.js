@@ -12,11 +12,9 @@ async function chunk(req, res) {
   // 한 번에 보낼 데이터 크기입니다.
   const chunkSize = 8;
 
-  res.writeHead(200, {
-    "Content-Type": "text/plain",
-    // 응답 본문의 전체 길이
-    "Content-Length": totalChunks * chunkSize,
-  });
+  res.setHeader("Content-Type", "text/plain");
+  // 응답 본문의 전체 길이
+  res.setHeader("Content-Length", totalChunks * chunkSize);
 
   // 1초씩 지연하면서 8바이트 청크를 5번 응답합니다.
   for (let i = 0; i < totalChunks; i++) {
@@ -29,10 +27,9 @@ async function chunk(req, res) {
 }
 
 function upload(req, res) {
-  res.writeHead(200, {
-    "content-type": "text/plain",
-  });
-  res.end("success");
+  res.setHeader("content-type", "text/plain");
+  res.write("success\n");
+  res.end();
 }
 
 function handler(req, res) {

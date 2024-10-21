@@ -37,9 +37,7 @@ let waitingClients = [];
 function subscribe(req, res) {
   // 응답 헤더에 content-type: text/event-stream을 실었습니다.
   // 클라이언트에게 SSE 프로토콜의 시작을 알립니다.
-  res.writeHead(200, {
-    "content-type": "text/event-stream",
-  });
+  res.setHeader("content-type", "text/event-stream");
   // 빈 줄로 헤더 끝을 표시합니다.
   res.write("\n");
 
@@ -80,14 +78,14 @@ function update(req, res) {
     const { text } = JSON.parse(body);
 
     if (!text) {
-      res.writeHead(400, {
-        "content-type": "application/json",
-      });
-      res.end(
+      res.statuscode = 400;
+      res.setHeader("content-type", "application/json");
+      res.body(
         JSON.stringify({
           error: "text 필드를 채워주세요",
         })
       );
+      res.end();
       return;
     }
 
@@ -115,7 +113,8 @@ function update(req, res) {
     }
 
     // 본 요청한 클라이언트에게 응답한다.
-    res.end(`${message}`);
+    res.write(`${message}`);
+    res.end();
   });
 }
 

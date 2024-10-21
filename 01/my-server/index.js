@@ -11,12 +11,14 @@ function static(req, res) {
   fs.readFile(filepath, (err, data) => {
     // 파일을 읽지 못한 경우
     if (err) {
-      res.end("Not Found");
+      res.write("Not Found\n");
+      res.end();
       return;
     }
 
     // 파일을 읽고 내용을 응답합니다.
-    res.end(data);
+    res.write(data);
+    res.end();
   });
 }
 

@@ -28,11 +28,12 @@ function handleJsonLogin(req, res) {
     const authenticated = email === "myemail" && password === "mypassword";
 
     // 인증 결과에 따라 헤더를 실습니다.
-    res.writeHead(authenticated ? 200 : 401, {
-      "Content-Type": "application/json",
-    });
+    res.statusCode = authenticated ? 200 : 401;
+
     // 인증 결과를 응답 본문에 실어 보냅니다.
-    res.end(JSON.stringify({ authenticated }));
+    res.setHeader("Content-Type", "application/json");
+    res.write(JSON.stringify({ authenticated }));
+    res.end();
   });
 }
 

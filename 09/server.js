@@ -40,16 +40,15 @@ function poll(req, res) {
   // 채팅 메세지가 없으면 204 No Content 상태코드를 응답합니다.
   // 메세지 본문은 비워둡니다.
   if (!latestMessage) {
-    res.writeHead(204);
+    res.statusCode = 204;
     res.end();
     return;
   }
 
   // 채팅 메세지가 있으면 응답 본문에 실어서 보냅니다.
-  res.writeHead(200, {
-    "content-type": "application/json",
-  });
-  res.end(`${latestMessage}`);
+  res.setHeader("content-type", "application/json");
+  res.body(`${latestMessage}\n`);
+  res.end();
 
   // 다음 메세지를 응답하기위해 message 변수는 비웠습니다.
   latestMessage = null;
@@ -73,23 +72,22 @@ function update(req, res) {
     const { text } = JSON.parse(body);
 
     if (!text) {
-      res.writeHead(400, {
-        "content-type": "application/json",
-      });
-      res.end(
+      res.statusCode = 400;
+      res.setHeader("content-type", "application/json");
+      res.body(
         JSON.stringify({
           error: "text 필드를 채워주세요",
         })
       );
+      res.end();
       return;
     }
 
     latestMessage = new Message(text);
 
-    res.writeHead(200, {
-      "content-type": "application/json",
-    });
-    res.end(`${latestMessage}`);
+    res.setHeader("content-type", "application/json");
+    res.write(`${latestMessage}`);
+    res.end();
   });
 }
 

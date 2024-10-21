@@ -14,14 +14,16 @@ function serveStatic(root) {
       if (err) {
         // 오류처리: 파일이 없는 경우
         if (err.code === "ENOENT") {
-          res.writeHead(404);
-          res.end("Not Found");
+          res.statusCode = 404;
+          res.write("Not Found\n");
+          res.end();
           return;
         }
 
         // 오류 처리: 파일 읽기 실패
-        res.writeHead(500);
-        res.end("Internal Server Error");
+        res.statusCode = 500;
+        res.write("Internal Server Error\n");
+        res.end();
         return;
       }
 
@@ -43,7 +45,7 @@ function serveStatic(root) {
         if (isFresh) {
           // TODO: redirect(res)
           // 응답 헤더에 `304 Not Modified` 상태 코드를 실습니다.
-          res.writeHead(304);
+          res.statusCode = 304;
           // 파일을 다시 제공할 필요가 없습니다. 본문은 비워서 작고 빠르게 응답합니다.
           res.end();
           return;
@@ -65,7 +67,7 @@ function serveStatic(root) {
         // 요청한 파일 수정일이 서버 파일의 수정일과 같다면 변경되지 않았다고 판답합니다.
         if (isFresh) {
           // 응답 헤더에 `304 Not Modified` 상태 코드를 실습니다.
-          res.writeHead(304);
+          res.statusCode = 304;
           // 파일을 다시 제공할 필요가 없습니다. 본문은 비워서 작고 빠르게 응답합니다.
           res.end();
           return;
@@ -82,14 +84,16 @@ function serveStatic(root) {
         if (err) {
           // 오류처리: 파일이 없는 경우
           if (err.code === "ENOENT") {
-            res.writeHead(404);
-            res.end("Not Found");
+            res.statusCode = 404;
+            res.write("Not Found\n");
+            res.end();
             return;
           }
 
           // 오류 처리: 파일 읽기 실패
-          res.writeHead(500);
-          res.end("Internal Server Error");
+          res.statusCode = 500;
+          res.write("Internal Server Error\n");
+          res.end();
           return;
         }
 
@@ -139,8 +143,8 @@ function serveStatic(root) {
         }
 
         // 파일 내용을 본문에 실어 응답한다.
-        res.writeHead(200);
-        res.end(data);
+        res.write(data);
+        res.end();
       });
     });
   };

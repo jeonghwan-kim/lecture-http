@@ -12,7 +12,8 @@ const options = {
 // 서버의 요청 핸들러를 정의합니다.
 const requestHandler = (req, res) => {
   // 간단히 Hello 를 본문에 실어 응답합니다.
-  res.end("Hello");
+  res.write("Hello\n");
+  res.end();
 };
 
 // 옵션객체와 핸들러로 https 서버 인스턴스를 만듭니다.
