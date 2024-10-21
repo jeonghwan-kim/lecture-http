@@ -56,7 +56,7 @@ function longPoll(req, res) {
   // 데이터가 있으면 응답하고 비운다.
   if (!res.headersSent) {
     res.setHeader("content-type", "application/json");
-    res.write(`${latestMessage}\n`);
+    res.write(`${latestMessage}`);
     res.end();
     latestMessage = null;
   }

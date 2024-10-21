@@ -137,7 +137,8 @@ function serveStatic(root) {
         // delayMs가 설정된 경우 그 시간만큼 지연 응답한다.
         if (res.delayMs) {
           setTimeout(() => {
-            res.end(data);
+            res.write(data);
+            res.end();
           }, res.delayMs);
           return;
         }
