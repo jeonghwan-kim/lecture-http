@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+  </head>
+  <body>
+    <h1>Login</h1>
+
+    <h2>GET LOGIN</h2>
+    <form method="GET" action="/login">
+      <input id="email" name="email" placeholder="Email" />
+      <input name="password" placeholder="Password" />
+      <button type="submit">Login</button>
+    </form>
+
+    <h2>POST LOGIN</h2>
+    <form method="POST" action="/login">
+      <input id="email" name="email" placeholder="Email" />
+      <input name="password" placeholder="Password" />
+      <button type="submit">Login</button>
+    </form>
+
+    <h2>POST LOGIN 2</h2>
+    <form method="POST" action="/login" enctype="multipart/form-data">
+      <input id="email" name="email" placeholder="Email" />
+      <input name="password" placeholder="Password" />
+      <input type="file" name="identification-card" accept="image/png,image/jepg"/>
+      <button type="submit">Login</button>
+    </form>
+  </body>
+</html>
