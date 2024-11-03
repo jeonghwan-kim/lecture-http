@@ -12,7 +12,97 @@
       // wretch 로딩
       import wretch from 'https://cdn.skypack.dev/wretch/dist/bundle/wretch.all.min.mjs'
 
-      // TODO
+      const testSuperagent = async () => {
+        const attachCustomeHeader = (request) => {
+          request.header['X-Foo'] = 'foo';
+          return request;
+        }
+ 
+        try {
+          const response = await superagent
+            .get("/api/fail")
+            .use(attachCustomeHeader);
+            
+          console.log('response:', response)
+          console.log('response.body.result:', response.body.result)
+        } catch (error) {
+          console.log('error:', error)
+          console.log('error.status:', error.status)
+          console.log('error.response:', error.response)
+        }
+      }
+      // testSuperagent();
+
+      const testAxios = async () => {
+        const customeHeaderInterceptor = (config) => {
+          config.headers["X-Foo"] = "foo"
+          return config
+        }
+        axios.interceptors.request.use(customeHeaderInterceptor)
+
+        try {
+          const response = await axios.get("/api/fail")
+  
+          // 전용 응답 객체를 제공한다.
+          console.log('response:', response)
+          console.log('response.data.result:', response.data.result)
+        } catch (error) {
+          console.log('error:', error)
+          console.log('error.code:', error.code)
+          console.log('error.message:', error.message)
+          console.log('error.response:', error.response)
+          console.log('error.response.data.result:', error.response.data.result)
+        }
+      }
+      // testAxios();
+
+      const testKy = async () => {
+        const attachCustomeHeaders = (request) => {
+          request.headers.set('X-Foo', 'foo')
+        }
+
+        try {
+          const response = await ky.get("/api/fail", {
+            hooks: {
+              beforeRequest: [ attachCustomeHeaders ],
+            },
+          }).json()
+          console.log(response)
+          console.log(response.result)
+        } catch (error) {
+          console.log(error)
+        }
+      }
+      // testKy();
+
+      const testWretch = async () => {
+        const attachCustomeHeader = (next) => {
+          return (url, options) => {
+            options.headers = { "X-Foo": "foo" }
+            return next(url, options)
+          }
+        }
+        
+        try {
+          const response = await wretch()
+            .middlewares([ attachCustomeHeader ])  
+            .get("/api/success")
+            .notFound(error => {
+              console.log('notFound', error)
+              return error.text;
+            })
+            .json()
+          console.log('response:', response)
+          console.log('response.result:', response.result)
+        } catch (error) {
+          console.log('error:', error)
+          console.log('error.status:', error.status)
+          console.log('error.response:', error.response)
+          console.log('error.json.result:', error.json.result)
+        }
+      }
+      testWretch();
+
     </script>
   </head>
   <body>
