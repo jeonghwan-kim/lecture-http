@@ -1,3 +1,10 @@
+const subscribe = () => {
+  eventSource = new EventSource("/subscribe");
+  eventSource.addEventListener("message", function (e) {
+    render(JSON.parse(e.data));
+  });
+};
+
 const render = (message) => {
   const messageElement = document.createElement("div");
   const { text } = message;
@@ -7,6 +14,6 @@ const render = (message) => {
 };
 
 const init = () => {
-  // todo
+  subscribe();
 };
 document.addEventListener("DOMContentLoaded", init);
