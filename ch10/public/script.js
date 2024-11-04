@@ -1,3 +1,17 @@
+const longPollServer = async () => {
+  const response = await fetch("/longpoll");
+
+  if (response.status === 408) {
+    longPollServer();
+    return;
+  }
+
+  const message = await response.json();
+  render(message);
+
+  longPollServer();
+};
+
 const render = (message) => {
   const messageElement = document.createElement("div");
   const { text } = message;
@@ -7,6 +21,6 @@ const render = (message) => {
 };
 
 const init = () => {
-  // todo
+  longPollServer();
 };
 document.addEventListener("DOMContentLoaded", init);
