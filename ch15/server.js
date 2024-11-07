@@ -1,6 +1,11 @@
 const https = require("https");
+const fs = require("fs");
+const path = require("path");
 
-const options = {};
+const options = {
+  key: fs.readFileSync(path.join(__dirname, "./server.key")),
+  cert: fs.readFileSync(path.join(__dirname, "./server.cert")),
+};
 
 const handler = (req, res) => {
   res.write("Hello\n");
