@@ -2,8 +2,42 @@
 <html>
   <head>
     <meta charset="UTF-8" />
+    <link rel="preload" href="cat.jpg" as="image" />
+    <link rel="prefetch" href="index-next.html" as="html"/>
     <style>img{width: 50%;}</style>
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+          console.log('DOMContentLoaded')
+        });
+        window.addEventListener('load', () => {
+          console.log("load");
+          const entries = performance.getEntriesByType('measure');
+          entries.forEach(entry => {
+            const result = `${entry.name}: ${entry.startTime}, ${entry.duration} ms`;
+            console.log(result);
+          });
+        });
+    </script>
   </head>
   <body>
+    <button id="addImageButton">Add Image</button>
+    <script>
+      document.querySelector('#addImageButton').addEventListener('click', () => {
+          const img = document.createElement('img')
+          img.src = 'cat.jpg'
+          document.body.appendChild(img)
+      })
+    </script>
+    
+    <a href="index-next.html">Next Page</a>
+
+    <img src="cat.jpg" alt="cat" loading="lazy"/>
+    <div style="height:1000vh;border:solid 1px black">Empty Box</div>
+    <img src="dog.jpg" alt="dog" loading="lazy"/>
+
+    <script>performance.mark("script-big-start");</script>
+    <script src="script-big.js" defer></script>
+    <script>performance.mark("script-small-start");</script>
+    <script src="script-small.js" defer></script>
   </body>
 </html>

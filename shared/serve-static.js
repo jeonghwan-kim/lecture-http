@@ -46,6 +46,14 @@ const serveStatic = (root) => {
       }
       res.setHeader("Content-Type", contentType);
 
+      if (res.delayMs) {
+        setTimeout(() => {
+          res.write(data);
+          res.end();
+        }, res.delayMs);
+        return;
+      }
+      
       res.write(data);
       res.end();
     });
