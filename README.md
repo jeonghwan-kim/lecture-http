@@ -1,6 +1,8 @@
 # HTTP
 
-[HTTP] 수업 자료입니다.
+["웹 개발의 핵심, HTTP 완벽 마스터하기!"](https://inf.run/nskQe) 수업 자료입니다.
+
+<a href="https://inf.run/nskQe"><img src="https://github.com/user-attachments/assets/043663c6-d649-43c4-a26d-5a90cde93e00" alt="웹 개발의 핵심, HTTP 완벽 마스터하기!" title="웹 개발의 핵심, HTTP 완벽 마스터하기!" width="600" /></a>
 
 ## 내용
 
